@@ -49,19 +49,18 @@ def main():
 
     # Call the Calendar API
     now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+    print(now)
+
+    '''
     events_result = service.events().list(calendarId='primary', timeMin=now,
-                                        maxResults=10, singleEvents=True,
+                                        maxResults=15, singleEvents=True,
                                         orderBy='startTime').execute()
     events = events_result.get('items', [])
     
     if not events:
         print('No upcoming events found.')
 
-    
-    #convertToTuples
-    #print(events[0].keys())
-    
-
+    #get all busy times
     for event in events:
         start, end = event.get('start').get('dateTime'), event.get('end').get('dateTime')
 
@@ -73,10 +72,17 @@ def main():
             times[start_date].append([convertTimeToIntegers(start_time), convertTimeToIntegers(end_time)])
 
     
-    final_free_times = getFreeTime(times['2020-09-01'])
-    print('2020-09-01', end = ': ')
-    finalPrintStatement(final_free_times)
+    
+    
+    #for current date print the free times 
+    for current_date in findDateRange('2020-08-25', '2020-09-05'):
 
+        print(current_date, end = ': ')
+        #pass all busy times for the current date
+        #get all free times for the current date
+        final_free_times = getFreeTime(times[current_date])
+        finalPrintStatement(final_free_times)
+        print()
 
 
 #Returns all the times available on your calendar between these two dates
@@ -103,15 +109,28 @@ def getFreeTime(busy_times):
     
     return free_times
 
-
+#convert time intervals to string
 def finalPrintStatement(array):
-    for interval in array:
-        print(convertIntToString(interval[0], interval[1]), end=' ')
+    for i, interval in enumerate(array):
+        last = ','
+        print(convertIntToString(interval[0], interval[1]), end='')
+        if i != len(array) - 1:
+            print(last, end = ' ')
 
-
+#convert time to string from integers
 def convertIntToString(start, end):
-    return str(start[0])+':'+str(start[1]) + '-' + str(end[0])+':'+str(end[1])
+    first_am_pm = 'am' if start[0] < 12 else 'pm'
+    second_am_pm = 'am' if end[0] < 12 else 'pm'
+    
+    first_hour = '0'+str(start[0]) if start[0] <= 9 else str(start[0]) if start[0] <= 12 else str(start[0]-12)
+    first_min = '0'+str(start[1]) if start[1] <= 9 else str(start[1])
 
+    end_hour = '0'+str(end[0]) if end[0] <= 9 else str(end[0]) if end[0] <= 12 else str(end[0]-12)
+    end_min = '0'+str(end[1]) if end[1] <= 9 else str(end[1])
+
+    return first_hour+':'+first_min + first_am_pm + ' - ' + end_hour+':'+end_min+second_am_pm
+
+#convert time to int from string
 def convertTimeToIntegers(time_string):
     time = time_string.split(':')
     return (int(time[0]), int(time[1]))
@@ -119,7 +138,6 @@ def convertTimeToIntegers(time_string):
 #print time in format: XX hours, YY minutes and ZZ seconds.
 def printDifference(difference):
     print(str(difference[0]) + ' hours,', str(difference[1]) + ' minutes and', str(difference[2]) + ' seconds.')
-
 
 #calculates the differences between two times
 def timeDuration(start_time, end_time):
@@ -143,13 +161,47 @@ def convertTimeString(curr_time):
     zone = ZONES['-'+zone] if negative else ZONES['+'+zone]
     return date, time, zone
 
-    
-    
-    
+#convert date
+def findDateRange(start, end):
+    arr = []
+    start = list(map(int, start.split('-')))
+    end = list(map(int, end.split('-')))
+    start_year, start_month, start_date = start
+    end_year, end_month, end_date = end
+
+    curr_year, curr_month, curr_date = int(start_year), int(start_month), int(start_date)
+    string_formatted_curr_date = ''
+    i = 0
+
+    while [curr_year, curr_month, curr_date] != end:
+
+        formatted_curr_year = str(curr_year)
+        formatted_curr_month = '0' + str(curr_month) if curr_month < 10 else str(curr_month)
+        formatted_curr_date = '0' + str(curr_date) if curr_date < 10 else str(curr_date)
+
+        string_formatted_curr_date = formatted_curr_year + '-' + formatted_curr_month + '-' + formatted_curr_date
+        arr.append(string_formatted_curr_date)
+
+        if (curr_date == 30 and curr_month % 2 == 0) or curr_date == 31:
+            curr_date = 1
+            curr_month += 1
+            if curr_month > 12:
+                curr_month = 1
+                curr_year += 1
+
+        else:
+            curr_date += 1
+
+    return arr
+
+'''
+
+
+
+
+
 
     
-    
-
 
 if __name__ == '__main__':
     main()
