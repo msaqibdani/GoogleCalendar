@@ -19,7 +19,7 @@ def index(request):
 		#print(a.from_date, a.to_date, a.SCOPES, a.ZONES, a.times, a.service, a.freeTimes, sep = '\n')
 
 		a.main()
-		print(a.freeTimes)
+		print(a.formatted_free_times)
 		#return HttpResponse(request.POST['start_date'] + ' \n' + request.POST['end_date'])
 	return render(request, "freetimes/index.html")
 

@@ -19,6 +19,7 @@ class CalendarFreeTimes():
         self.times = defaultdict(list) #All the busy times in your calendar
         self.service = None
         self.freeTimes = defaultdict(list)
+        self.formatted_free_times = []
 
     def main(self):
 
@@ -51,11 +52,12 @@ class CalendarFreeTimes():
 
         for each_date in all_dates:
             final_free_times = self.getFreeTime(self.times[each_date])
-            print('[Daniyal]', final_free_times)
+            #print('[Daniyal]', final_free_times)
 
             if not final_free_times: continue
             self.freeTimes[each_date].append(final_free_times[:])
-            
+        
+        self.printFreeTimes(date_1, date_2)  
 
 
     def initializeToken(self):
@@ -113,16 +115,19 @@ class CalendarFreeTimes():
             if start_date == end_date:
                 self.times[start_date].append([self.convertTimeToIntegers(start_time), self.convertTimeToIntegers(end_time)])
 
-    def printFreeTimes(self):
+    def printFreeTimes(self, date_1, date_2):
         #for current date print the free times 
-        for current_date in findDateRange(date_1, date_2):
+        result_string = ''
+        for current_date in self.findDateRange(date_1, date_2):
 
-            print(current_date, end = ': ')
+            result_string += (current_date + ' : ')
             #pass all busy times for the current date
             #get all free times for the current date
             final_free_times = self.getFreeTime(self.times[current_date])
-            finalPrintStatement(final_free_times)
-            print()
+            result_string += (self.finalPrintStatement(final_free_times) + '\n')
+
+        self.formatted_free_times.append(result_string)
+            
 
     def getFreeTime(self, busy_times):
 
@@ -150,11 +155,13 @@ class CalendarFreeTimes():
 
     #convert time intervals to string
     def finalPrintStatement(self, array):
+        result_string = ''
         for i, interval in enumerate(array):
-            last = ','
-            print(self.convertIntToString(interval[0], interval[1]), end='')
+            result_string += self.convertIntToString(interval[0], interval[1])
             if i != len(array) - 1:
-                print(last, end = ' ')
+                result_string += ', '
+
+        return result_string
 
     #convert time to string from integers
     def convertIntToString(self, start, end):

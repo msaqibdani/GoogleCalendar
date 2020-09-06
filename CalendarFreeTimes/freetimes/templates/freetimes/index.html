@@ -3,6 +3,13 @@
 <head>
 	<title>Get All Free Times</title>
 
+	<!-- REACT LIBRARY -->
+    <script src="https://unpkg.com/react@15.5.4/dist/react.js"></script>
+    <!-- REACT DOM LIBRARY -->
+    <script src="https://unpkg.com/react-dom@15.5.4/dist/react-dom.js"></script>
+    <!-- BABEL LIBRARY -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.25.0/babel.min.js"></script>
+
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -11,31 +18,78 @@
 
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
+	<style type="text/css">
+
+		.marginBottom {
+			margin-bottom: 5vh;
+		}
+
+		#header {
+			color: white;
+			background-color: #4285F4;
+			height: 10vh;
+			padding-top: 2.5vh;
+			text-align: center;
+		}
+
+		
+	</style>
+
+
 </head>
 <body>
+
+	<h3 id="header" class="container-fluid" style="margin-bottom: 2vh;">Google Calendar API</h3>
+	
+	<!--
+	<div id = "header"></div>
+	<script type="text/babel">
+		
+			
+		class Header extends React.Component {
+
+			render() {
+				return (
+					<div>Google Calendar API </div>
+				)
+			}
+
+		}
+
+		ReactDOM.render(<Header />, document.getElementById("header"));
+	</script>
+	-->
 	<form method="POST">
 		{% csrf_token %}
-		<div class="container-fluid" style="margin-top: 5vh; margin-left: 2vh;">
-		<div class="row">
-			<div class="col">
-				<label>Enter the start date</label>
-				<input name="start_date" type="date"/>
-			</div>
-		</div>
 
-		<div class="row">
-			<div class="col">
-				<label>Enter the end date</label>
-				<input type="date" name="end_date" placeholder="YYYY-DD-MM">
+		<div class="container-fluid">
+			<div class="row marginBottom">
+				<h5 class="col">
+					Please enter the details below.
+				</h5>
 			</div>
-		</div>
 
-		<div class="row">
-			<div class="col">
-				<input type="submit" class="btn btn-outline-dark" name="submit_button">
+			<div class="row ">
+				<div class="col-2"><label>Enter the start date</label></div>
+				<div class="col-10">
+					<input name="start_date" type="date" >
+				</div>
 			</div>
-		</div>
+
+			<div class="row marginBottom">
+				<div class="col-2"><label>Enter the end date</label></div>
+				<div class="col-10">
+					<input type="date" name="end_date" >
+				</div>
+			</div>
+
+			<div class="row marginBottom">
+				<div class="col">
+					<input type="submit" class="btn btn-primary" name="submit_button">
+				</div>
+			</div>
 		</div>
 	</form>
+
 </body>
 </html>
