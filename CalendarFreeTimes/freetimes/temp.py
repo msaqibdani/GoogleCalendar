@@ -2,11 +2,26 @@ from __future__ import print_function
 import datetime
 import pickle
 import os.path
+import sys
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
-import sys
 from collections import defaultdict
+
+from_date = ''
+to_date = ''
+
+def setFromDate(pFrom_date):
+    from_date = pFrom_date
+
+def setToDate(pTo_date):
+    to_date = pTo_date
+
+def getFromDate():
+    return from_date if len(from_date) >= 0 else '1'
+
+def getToDate():
+    return to_date if len(to_date) >= 0 else '10'
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
@@ -47,18 +62,30 @@ def main():
 
     service = build('calendar', 'v3', credentials=creds)
 
-    # Call the Calendar API
-    now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-    print(now)
+    
+    #Getting a date from the terminal arguments
+    if len(sys.argv) >= 3:
+        from_date = date_1 = sys.argv[1]
+        to_date = date_2 = sys.argv[2]
+        print(from_date, to_date)
 
-    '''
-    events_result = service.events().list(calendarId='primary', timeMin=now,
-                                        maxResults=15, singleEvents=True,
+
+    else:
+        print('No dates provided')
+        return 
+
+    from_date += 'T00:00:00.000000Z'
+    to_date += 'T23:59:59.599999Z'
+
+
+    events_result = service.events().list(calendarId='primary', timeMin=from_date,
+                                        timeMax=to_date, singleEvents=True,
                                         orderBy='startTime').execute()
     events = events_result.get('items', [])
     
     if not events:
         print('No upcoming events found.')
+
 
     #get all busy times
     for event in events:
@@ -71,11 +98,9 @@ def main():
         if start_date == end_date:
             times[start_date].append([convertTimeToIntegers(start_time), convertTimeToIntegers(end_time)])
 
-    
-    
-    
+
     #for current date print the free times 
-    for current_date in findDateRange('2020-08-25', '2020-09-05'):
+    for current_date in findDateRange(date_1, date_2):
 
         print(current_date, end = ': ')
         #pass all busy times for the current date
@@ -84,11 +109,10 @@ def main():
         finalPrintStatement(final_free_times)
         print()
 
-
 #Returns all the times available on your calendar between these two dates
 def getFreeTime(busy_times):
-    start_time = [4, 0]
-    end_time = [18, 0]
+    start_time = [0, 0]
+    end_time = [23, 59]
 
     if len(times) == 0:
         return 'Free Schedule'
@@ -194,14 +218,8 @@ def findDateRange(start, end):
 
     return arr
 
+
 '''
-
-
-
-
-
-
-    
-
 if __name__ == '__main__':
     main()
+'''
